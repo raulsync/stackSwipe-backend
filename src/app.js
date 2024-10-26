@@ -34,13 +34,42 @@ const port = 7777;
  });
 
 */
-//testing get call
-app.get("/user", (req, res) => {
+
+/*
+  ? => optional + => (repeatitive same char)  bc*cd=> bcafjahfhfcd => it means path starts with bc and in between we put any character and it ends with cd
+  /.*baby$ / => it will match all path that ends with baby
+  we can also use regex instead of string in route path
+*/
+
+// app.get(/.*ba$/, (req, res) => {
+//   res.send({
+//     userName: "Rahul Anand",
+//     emailId: "rahul123@gmail.com",
+//   });
+// });
+
+/*
+  - Playing with query param and dynamic route param
+  -req.query to get the urlquery param that is passed from client side
+  -req.params to get the dynamic data that pass from url as a params
+*/
+
+app.get("/user/:userId/:password", (req, res) => {
+  console.log(req.query);
+  console.log(req.params);
   res.send({
     userName: "Rahul Anand",
     emailId: "rahul123@gmail.com",
   });
 });
+
+//testing get call
+// app.get("/user", (req, res) => {
+//   res.send({
+//     userName: "Rahul Anand",
+//     emailId: "rahul123@gmail.com",
+//   });
+// });
 
 app.post("/user", (req, res) => {
   console.log("Data save to database successfully");
