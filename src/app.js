@@ -4,16 +4,51 @@ const app = express(); //instance of express
 
 const port = 7777;
 
-app.use("/", (req, res) => {
-  res.send("Hello from namaste dashboard");
+//order of routes matter when we /hello/2 => it will go to /hello routes because first it check /hello string exist or not.
+
+//if we use / as a path then after that if anything comes it will always go to / routes
+
+// app.use("/", (req, res) => {
+//   res.send("Hello from namaste dashboard");
+// });
+
+// app.use("/hello/2", (req, res) => {
+//   res.send("Hello from /2");
+// });
+
+// app.use("/hello", (req, res) => {
+//   res.send("Hello hello hello");
+// });
+
+// app.use("/namaste", (req, res) => {
+//   res.send("Namaste People");
+// });
+
+/*
+
+ * order of execution matter here if we test any route it start from here if path matched then it doesn't go to next route
+
+
+ app.use("/user", (req, res) => {
+   res.send("Testing app.use ! ");
+ });
+
+*/
+//testing get call
+app.get("/user", (req, res) => {
+  res.send({
+    userName: "Rahul Anand",
+    emailId: "rahul123@gmail.com",
+  });
 });
 
-app.use("/hello", (req, res) => {
-  res.send("Hello hello hello");
+app.post("/user", (req, res) => {
+  console.log("Data save to database successfully");
+  res.send("Data save to database");
 });
 
-app.use("/namaste", (req, res) => {
-  res.send("Namaste People");
+app.delete("/user", (req, res) => {
+  res.send("user data deleted from database successfully !");
 });
 
 app.use("/test", (req, res) => {
