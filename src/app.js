@@ -1,5 +1,5 @@
 const express = require("express");
-const { adminAuth, userAuth } = require("./middlewares/auth");
+// const { adminAuth, userAuth } = require("./middlewares/auth");
 const app = express(); //instance of express
 
 const port = 7777;
@@ -165,39 +165,73 @@ because first it check /hello string exist or not.
 
 //Practise For MiddleWare  //we can use app.use or app.all for middleware
 
-app.use("/admin", adminAuth);
+// app.use("/admin", adminAuth);
 
-app.get("/user", userAuth, (req, res) => {
-  console.log("all user");
-  res.send("all user data");
+// app.get("/user", userAuth, (req, res) => {
+//   console.log("all user");
+//   res.send("all user data");
+// });
+
+// //here we see that our code is repeatitive so we wrap logic inside middleware
+// // we can now refactor in folder structure to keep clean
+// app.get("/admin/getData", (req, res) => {
+//   // const token = "abhii";
+//   // const isAdminAuth = token === "abhi";
+
+//   // if (isAdminAuth) {
+//   //   console.log("Admin is authorized");
+//   res.send("All data sent");
+//   // } else {
+//   //   res.status(401).send("admin is unauthorized");
+//   // }
+// });
+
+// app.get("/admin/deleteData", (req, res) => {
+//   // const token = "rahul";
+//   // const isAdminAuth = token === "rahul";
+
+//   // if (isAdminAuth) {
+//   //   console.log("admin is authorized");
+
+//   res.send("deleted all data");
+
+//   // } else {
+//   //   res.status(401).send("admin is not authorized");
+//   // }
+// });
+
+//Error Handling
+
+//here is no error happened so execution move to the next route handler
+app.use("/", (err, req, res, next) => {
+  if (err) {
+    console.log("some error happened");
+
+    res.status(500).send("something went wrong");
+  }
 });
 
-//here we see that our code is repeatitive so we wrap logic inside middleware
-// we can now refactor in folder structure to keep clean
-app.get("/admin/getData", (req, res) => {
-  // const token = "abhii";
-  // const isAdminAuth = token === "abhi";
-
-  // if (isAdminAuth) {
-  //   console.log("Admin is authorized");
-  res.send("All data sent");
-  // } else {
-  //   res.status(401).send("admin is unauthorized");
+app.get("/userData", (req, res) => {
+  // try {
+  throw new Error("asdsdferf");
+  res.send("all user Data");
+  // } catch (error) {
+  //   if (error) {
+  //     res.status(501).send("some error occured");
+  //   }
   // }
 });
 
-app.get("/admin/deleteData", (req, res) => {
-  // const token = "rahul";
-  // const isAdminAuth = token === "rahul";
+//we can handle error by middleware here gracefully or using try catch block
 
-  // if (isAdminAuth) {
-  //   console.log("admin is authorized");
+//always handle error in last using app.use or use try catch on the go so that you never face any error
 
-  res.send("deleted all data");
+app.use("/", (err, req, res, next) => {
+  if (err) {
+    console.log("some error happened");
 
-  // } else {
-  //   res.status(401).send("admin is not authorized");
-  // }
+    res.status(500).send("something went wrong");
+  }
 });
 
 app.listen(port, () => {
