@@ -4,16 +4,17 @@ const { dbConnect } = require("./config/database")
 const User = require("./models/user")
 const port = 7777
 
+//we use express.json() method as middleware for our all api to read the json data and convert it into js object
+
+//if we not provide any route path to app.use then this will apply to all routes that we created in this file
+
+app.use(express.json())
+
 app.post("/signup", async (req, res) => {
-  const user = {
-    firstName: "Rahul",
-    lastName: "Anand",
-    emailId: "rahul@anand.com",
-    password: "rahul@123",
-  }
+  // Create a new instance of user model
+  const user = new User(req.body)
   try {
-    const userData = new User(user)
-    await userData.save()
+    await user.save()
     res.send("user data saved successfully")
   } catch (error) {
     console.error("Something went wrong", error.message)
