@@ -21,6 +21,7 @@ app.post("/signup", async (req, res) => {
     res.status(400).send("some error occured");
   }
 });
+
 //GET - user by email
 app.get("/user", async (req, res) => {
   const userId = req.body._id;
@@ -36,6 +37,35 @@ app.get("/user", async (req, res) => {
     }
   } catch (error) {
     console.log("something went wrong");
+    res.status(400).send("some error occured");
+  }
+});
+
+//DELETE => USER
+
+app.delete("/user", async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    // await User.findOneAndDelete(userId);
+    await User.findByIdAndDelete({ _id: userId });
+    res.send("user deleted succesfully");
+  } catch (err) {
+    cosole.log("something happened in delete user api");
+    res.status(400).send("some error occured");
+  }
+});
+
+// update => user
+
+app.patch("/user", async (req, res) => {
+  const userData = req.body;
+  const userId = req.body.userId;
+  try {
+    const user = await User.findByIdAndUpdate(userId, userData).lean();
+    console.log(user);
+    res.send("user updated successfully");
+  } catch (error) {
+    res.status(400).send("something went wrong");
   }
 });
 
