@@ -57,10 +57,27 @@ app.delete("/user", async (req, res) => {
 
 // update => user
 
-app.patch("/user", async (req, res) => {
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params.userId;
   const userData = req.body;
-  const userId = req.body.userId;
   try {
+    const UPDATE_ALLOWED = [
+      "gender",
+      "password",
+      "age",
+      "about",
+      "photoUrl",
+      "skills",
+    ];
+
+    const isAllowedUpdates = Object.keys(userData).every((k) => {
+      return UPDATE_ALLOWED.includes(k);
+    });
+
+    // console.log(isAllowedUpdates);
+    if (!isAllowedUpdates) {
+      throw new Error("user not updated");
+    }
     const user = await User.findByIdAndUpdate(userId, userData, {
       runValidators: true,
       returnDocument: "after",

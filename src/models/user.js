@@ -51,6 +51,10 @@ const userSchema = new mongoose.Schema(
       type: [String],
       default: ["javascript", "nodejs"],
     },
+    about: {
+      type: String,
+      default: "this is about section",
+    },
   },
   { timestamps: true }
 );
