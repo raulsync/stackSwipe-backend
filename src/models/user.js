@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 /*
 a schema defines the structure of documents within a collection
@@ -22,12 +23,22 @@ const userSchema = new mongoose.Schema(
       required: true,
       minLength: 6,
       maxLength: 8,
+      validate: (value) => {
+        if (!validator.isStrongPassword(value)) {
+          throw new Error("Your password is not strong ");
+        }
+      },
     },
     emailId: {
       type: String,
       unique: true,
       trim: true,
       required: true,
+      validate: (value) => {
+        if (!validator.isEmail(value)) {
+          throw new Error("Your email is not in proper format ");
+        }
+      },
     },
     age: {
       type: Number,
@@ -46,6 +57,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default:
         "https://static.vecteezy.com/system/resources/thumbnails/001/840/612/small_2x/picture-profile-icon-male-icon-human-or-people-sign-and-symbol-free-vector.jpg",
+      validate: (value) => {
+        if (!validator.isURL(value)) {
+          throw new Error("Url is incorrect");
+        }
+      },
     },
     skills: {
       type: [String],
