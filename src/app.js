@@ -1,7 +1,9 @@
 const express = require("express");
-const app = express(); //instance of express
+const bcrypt = require("bcrypt");
 const { dbConnect } = require("./config/database");
 const User = require("./models/user");
+const { validateSignUpData } = require("./utils/validate");
+const app = express(); //instance of express
 const port = 7777;
 
 //we use express.json() method as middleware for our all api to read the json data and convert it into js object
@@ -11,14 +13,32 @@ const port = 7777;
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  // Create a new instance of user model
-  const user = new User(req.body);
   try {
+    //validate user data
+    // console.log(req.body);
+    validateSignUpData(req.body);
+
+    const { firstName, lastName, emailId, password } = req.body;
+    // console.log(firstName, lastName, emailId, password);
+    //encrypt the password
+    //  bcrypt takes second arguement as saltrounds like how much tight secure our password
+    const hashPassword = await bcrypt.hash(password, 10);
+    console.log(hashPassword);
+
+    // Create a new instance of user model
+    //we never pass the req.body to the database we first destructure it and save it to db
+    console.log(password);
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: hashPassword,
+    });
     await user.save();
     res.send("user data saved successfully");
   } catch (error) {
-    console.error("Something went wrong", error.message);
-    res.status(400).send("some error occured " + error.message);
+    console.error("Error in signup ", error.message);
+    res.status(400).send("Error : " + error.message);
   }
 });
 
@@ -36,8 +56,8 @@ app.get("/user", async (req, res) => {
       res.status(404).send("user not found");
     }
   } catch (error) {
-    console.log("something went wrong");
-    res.status(400).send("some error occured " + error.message);
+    // console.log("something went wrong");
+    res.status(400).send("Error : " + error.message);
   }
 });
 
@@ -51,7 +71,7 @@ app.delete("/user", async (req, res) => {
     res.send("user deleted succesfully");
   } catch (err) {
     cosole.log("something happened in delete user api");
-    res.status(400).send("some error occured " + err.message);
+    res.status(400).send("Error " + err.message);
   }
 });
 
@@ -86,7 +106,7 @@ app.patch("/user/:userId", async (req, res) => {
 
     res.send("user updated successfully");
   } catch (error) {
-    res.status(400).send("something went wrong " + error.message);
+    res.status(400).send("Error : " + error.message);
   }
 });
 
@@ -101,7 +121,7 @@ app.get("/feed", async (req, res) => {
       res.status(404).send("user not found");
     }
   } catch (error) {
-    res.status(400).send("something went wrong " + error.message);
+    res.status(400).send("Error : " + error.message);
     console.log("something went wrong in getting userData");
   }
 });
