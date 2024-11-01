@@ -1,9 +1,11 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
+const validator = require("validator");
 const { dbConnect } = require("./config/database");
 const User = require("./models/user");
 const { validateSignUpData } = require("./utils/validate");
-const app = express(); //instance of express
+const app = express(); //instance of express\
+
 const port = 7777;
 
 //we use express.json() method as middleware for our all api to read the json data and convert it into js object
@@ -38,6 +40,35 @@ app.post("/signup", async (req, res) => {
     res.send("user data saved successfully");
   } catch (error) {
     console.error("Error in signup ", error.message);
+    res.status(400).send("Error : " + error.message);
+  }
+});
+
+//Login Api
+
+app.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    console.log(password);
+
+    //check if emailId is valid or not
+    if (!validator.isEmail(emailId)) {
+      throw new Error("please enter valid email");
+    }
+    const user = await User.findOne({ emailId });
+    console.log(user.password);
+    if (!user) {
+      throw new Error("Invalid Credentials");
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    console.log(isValidPassword);
+
+    if (!isValidPassword) {
+      throw new Error("Invalid Credentials");
+    }
+    res.send("Login Successfully");
+  } catch (error) {
     res.status(400).send("Error : " + error.message);
   }
 });
