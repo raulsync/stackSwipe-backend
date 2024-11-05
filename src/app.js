@@ -4,6 +4,8 @@ const validator = require("validator");
 const { dbConnect } = require("./config/database");
 const User = require("./models/user");
 const { validateSignUpData } = require("./utils/validate");
+const cookieParser = require("cookie-parser");
+var jwt = require("jsonwebtoken");
 const app = express(); //instance of express\
 
 const port = 7777;
@@ -13,6 +15,7 @@ const port = 7777;
 //if we not provide any route path to app.use then this will apply to all routes that we created in this file
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   try {
@@ -25,11 +28,11 @@ app.post("/signup", async (req, res) => {
     //encrypt the password
     //  bcrypt takes second arguement as saltrounds like how much tight secure our password
     const hashPassword = await bcrypt.hash(password, 10);
-    console.log(hashPassword);
+    // console.log(hashPassword);
 
     // Create a new instance of user model
     //we never pass the req.body to the database we first destructure it and save it to db
-    console.log(password);
+    // console.log(password);
     const user = new User({
       firstName,
       lastName,
@@ -49,27 +52,63 @@ app.post("/signup", async (req, res) => {
 app.post("/login", async (req, res) => {
   try {
     const { emailId, password } = req.body;
-    console.log(password);
+    // console.log(password);
 
     //check if emailId is valid or not
     if (!validator.isEmail(emailId)) {
       throw new Error("please enter valid email");
     }
     const user = await User.findOne({ emailId });
-    console.log(user.password);
+    // console.log(user.password);
     if (!user) {
       throw new Error("Invalid Credentials");
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
-    console.log(isValidPassword);
+    // console.log(isValidPassword);
 
-    if (!isValidPassword) {
+    if (isValidPassword) {
+      //jwt token
+      const token = await jwt.sign({ _id: user._id }, "stackSwipe$567");
+
+      // console.log(token);
+
+      //add token to cookie and send back the res to user
+      res.cookie("token", token);
+      res.send("Login Successfully");
+    } else {
       throw new Error("Invalid Credentials");
     }
-    res.send("Login Successfully");
   } catch (error) {
     res.status(400).send("Error : " + error.message);
+  }
+});
+
+// get request to  profile
+
+app.get("/profile", async (req, res) => {
+  try {
+    //get the token
+    const { token } = req.cookies;
+
+    //validate the token
+    if (!token) {
+      throw new Error("Invalid token");
+    }
+    const decodedId = await jwt.verify(token, "stackSwipe$567");
+    console.log(decodedId);
+
+    const { _id } = decodedId;
+
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error("User does not exist");
+    }
+    // console.log(token);
+    console.log(user);
+    res.send(user);
+  } catch (error) {
+    res.status(400).send("error : " + error.message);
   }
 });
 
@@ -133,7 +172,7 @@ app.patch("/user/:userId", async (req, res) => {
       runValidators: true,
       returnDocument: "after",
     });
-    console.log(user);
+    // console.log(user);
 
     res.send("user updated successfully");
   } catch (error) {
