@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
-
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 /*
 a schema defines the structure of documents within a collection
 */
@@ -76,6 +77,30 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+//creating methods to getJWT Token
+
+userSchema.methods.getJwt = async function () {
+  const user = this;
+  const token = await jwt.sign({ _id: user._id }, "stackSwipe$567", {
+    expiresIn: "1d",
+  });
+
+  return token;
+};
+
+//for validating password
+
+userSchema.methods.validatePassword = async function (passwordInputByUser) {
+  const passwordHash = this.password;
+
+  const isValidPassword = await bcrypt.compare(
+    passwordInputByUser,
+    passwordHash
+  );
+
+  return isValidPassword;
+};
 
 //creating model using schema
 // const User = mongoose.model("User",userSchema);

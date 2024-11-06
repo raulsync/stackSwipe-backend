@@ -5,9 +5,9 @@ const { dbConnect } = require("./config/database");
 const User = require("./models/user");
 const { validateSignUpData } = require("./utils/validate");
 const cookieParser = require("cookie-parser");
-var jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 const { userAuth } = require("./middlewares/auth");
-const app = express(); //instance of express\
+const app = express(); //instance of express
 
 const port = 7777;
 
@@ -21,11 +21,9 @@ app.use(cookieParser());
 app.post("/signup", async (req, res) => {
   try {
     //validate user data
-    // console.log(req.body);
     validateSignUpData(req.body);
 
     const { firstName, lastName, emailId, password } = req.body;
-    // console.log(firstName, lastName, emailId, password);
     //encrypt the password
     //  bcrypt takes second arguement as saltrounds like how much tight secure our password
     const hashPassword = await bcrypt.hash(password, 10);
@@ -65,20 +63,18 @@ app.post("/login", async (req, res) => {
       throw new Error("Invalid Credentials");
     }
 
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = await user.validatePassword(password);
     // console.log(isValidPassword);
 
     if (isValidPassword) {
       //jwt token
-      const token = await jwt.sign({ _id: user._id }, "stackSwipe$567", {
-        expiresIn: "1d",
-      });
+      const token = await user.getJwt();
 
       // console.log(token);
 
       //add token to cookie and send back the res to user
       res.cookie("token", token, {
-        expires: new Date(Date.now() + 900000),
+        expires: new Date(Date.now() + 3600000),
         httpOnly: true,
       });
       res.send("Login Successfully");
