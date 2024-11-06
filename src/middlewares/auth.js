@@ -1,28 +1,27 @@
-function adminAuth(req, res, next) {
-  const token = "rahul";
-  const isAuth = token === "rahul";
-  if (isAuth) {
-    console.log("you are authorized");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+async function userAuth(req, res, next) {
+  try {
+    //read the token from req.cookies
+    const { token } = req.cookies;
+    if (!token) {
+      throw new Error("Token not valid !!!");
+    }
+    //validate the token and find the user and send the user as response
+    const decodedId = await jwt.verify(token, "stackSwipe$567");
+    const { _id } = decodedId;
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error("user not found !");
+    }
+    //attaching user to req;
+    req.user = user;
     next();
-  } else {
-    console.log("you are not authorized");
-    res.status(401).send("you are unauthorized");
-  }
-}
-
-function userAuth(req, res, next) {
-  const token = "abhi";
-  const isAuth = token === "abhi";
-  if (isAuth) {
-    console.log("user is authorized");
-    next();
-  } else {
-    console.log("user is not authorized");
-    res.status(401).send("user is not authorized");
+  } catch (error) {
+    res.status(400).send("Error : " + error.message);
   }
 }
 
 module.exports = {
-  adminAuth,
   userAuth,
 };

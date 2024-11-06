@@ -6,6 +6,7 @@ const User = require("./models/user");
 const { validateSignUpData } = require("./utils/validate");
 const cookieParser = require("cookie-parser");
 var jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 const app = express(); //instance of express\
 
 const port = 7777;
@@ -69,12 +70,17 @@ app.post("/login", async (req, res) => {
 
     if (isValidPassword) {
       //jwt token
-      const token = await jwt.sign({ _id: user._id }, "stackSwipe$567");
+      const token = await jwt.sign({ _id: user._id }, "stackSwipe$567", {
+        expiresIn: "1d",
+      });
 
       // console.log(token);
 
       //add token to cookie and send back the res to user
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 900000),
+        httpOnly: true,
+      });
       res.send("Login Successfully");
     } else {
       throw new Error("Invalid Credentials");
@@ -86,31 +92,25 @@ app.post("/login", async (req, res) => {
 
 // get request to  profile
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    //get the token
-    const { token } = req.cookies;
-
-    //validate the token
-    if (!token) {
-      throw new Error("Invalid token");
-    }
-    const decodedId = await jwt.verify(token, "stackSwipe$567");
-    console.log(decodedId);
-
-    const { _id } = decodedId;
-
-    const user = await User.findById(_id);
-    if (!user) {
-      throw new Error("User does not exist");
-    }
-    // console.log(token);
+    const user = req.user;
     console.log(user);
     res.send(user);
   } catch (error) {
     res.status(400).send("error : " + error.message);
   }
 });
+
+//POST request to sendConnectionRequest
+
+app.post("/sendConnectionRequest", userAuth, (req, res) => {
+  console.log("sending connection request");
+
+  res.send("connection request sent");
+});
+
+/*
 
 //GET - user by email
 app.get("/user", async (req, res) => {
@@ -179,6 +179,8 @@ app.patch("/user/:userId", async (req, res) => {
     res.status(400).send("Error : " + error.message);
   }
 });
+
+*/
 
 //Get - Feed Data => Get All user Data
 
