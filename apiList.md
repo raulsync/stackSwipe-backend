@@ -8,9 +8,9 @@
 
 #### profileRouter
 
-- GET /profile
-- Patch /profile
-- DELETE /profile
+- GET /profile/view
+- Patch /profile/edit
+- DELETE /profile/password
 
 #### connectionRequestRouter
 
