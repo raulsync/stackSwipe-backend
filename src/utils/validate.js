@@ -28,6 +28,29 @@ const validateEditProfile = (req) => {
   );
   return isEditAllowedFields;
 };
+
+//**TODO
+
+// const validateUpdatePassword = async (req) => {
+//   //get current password and new Password from req.body
+//   const { currentPassword, newPassword } = req.body;
+
+//   if (!currentPassword || !newPassword) {
+//     throw new Error("All password fields are required");
+//   }
+//   if (currentPassword === newPassword) {
+//     throw new Error("new password is same as current password");
+//   }
+
+//   //validate the password
+//   if (
+//     !validator.isStrongPassword(currentPassword) ||
+//     !validator.isStrongPassword(newPassword)
+//   ) {
+//     throw new Error("password must be strong");
+//   }
+// };
+
 module.exports = {
   validateSignUpData,
   validateEditProfile,

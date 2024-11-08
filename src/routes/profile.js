@@ -60,6 +60,13 @@ profileRouter.patch("/profile/password", userAuth, async (req, res) => {
     if (currentPassword === newPassword) {
       throw new Error("your new password is same as current password");
     }
+    //validate the password
+    if (
+      !validator.isStrongPassword(currentPassword) ||
+      !validator.isStrongPassword(newPassword)
+    ) {
+      throw new Error("password must be strong");
+    }
 
     //check password present in db
     const isValidPassword = await bcrypt.compare(
@@ -70,9 +77,6 @@ profileRouter.patch("/profile/password", userAuth, async (req, res) => {
     if (!isValidPassword) {
       throw new Error("password is not valid");
     }
-
-    //validate Password
-    //----------------------
 
     const hashPassowrd = await bcrypt.hash(newPassword, 10);
     user.password = hashPassowrd;
