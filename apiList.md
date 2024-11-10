@@ -2,20 +2,20 @@
 
 #### authRouter
 
-- POST /signup
-- POST /login
-- POST /logout
+- POST /signup - done
+- POST /login - done
+- POST /logout - done
 
 #### profileRouter
 
-- GET /profile/view
-- Patch /profile/edit
-- Patch /profile/password
+- GET /profile/view - done
+- Patch /profile/edit - done
+- Patch /profile/password - refactor needed
 
 #### connectionRequestRouter
 
 - POST /request/send/interested/:userId
-- POST /request /send/ignored /:userId
+- POST /request /send/ignored /:userId3
 - Post /request/review/accepted/:requestId
 - Post /request/review/rejected/:requestId
 

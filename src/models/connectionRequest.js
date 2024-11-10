@@ -22,6 +22,8 @@ const connectionRequestSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+connectionRequestSchema.pre("validate", function (next) {});
+
 const ConnectionRequest = mongoose.model(
   "connectionRequest",
   connectionRequestSchema
