@@ -15,10 +15,11 @@ requestRouter.post(
 
       //validate Allowed status
       const allowedStatus = ["interested", "ignored", "accepted", "rejected"];
-      ConnectionRequest;
+
       if (!allowedStatus.includes(status)) {
         return res.status(400).json({ message: "please enter valid status" });
       }
+
       const fromUser = await User.findById(fromUserId);
       const toUser = await User.findById(toUserId);
 
@@ -59,7 +60,7 @@ requestRouter.post(
       });
       const requestData = await connectionRequest.save();
       res.json({
-        message: `${fromUser.firstName} send request to ${toUser.firstName} `,
+        message: `${fromUser.firstName} is ${status}  in ${toUser.firstName} `,
         data: {
           requestData,
         },

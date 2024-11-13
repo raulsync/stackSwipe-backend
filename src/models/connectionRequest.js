@@ -22,7 +22,19 @@ const connectionRequestSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-connectionRequestSchema.pre("validate", function (next) {});
+//indexing
+
+//we use schema.index to create index
+//when our db grow then the query becomes very expensive so we need to put indexes on some schema.
+connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
+
+connectionRequestSchema.pre("save", function (next) {
+  const connectionRequest = this;
+  if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
+    throw new Error("you can not sent request to yourself");
+  }
+  next();
+});
 
 const ConnectionRequest = mongoose.model(
   "connectionRequest",
