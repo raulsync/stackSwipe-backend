@@ -4,6 +4,8 @@ const { ConnectionRequest } = require("../models/connectionRequest");
 const User = require("../models/user");
 const requestRouter = express.Router();
 
+//send connection request api
+
 requestRouter.post(
   "/request/send/:status/:toUserId",
   userAuth,
@@ -67,6 +69,51 @@ requestRouter.post(
       });
     } catch (error) {
       res.status(400).send("Error : " + error.message);
+    }
+  }
+);
+
+//review connection request api
+
+requestRouter.post(
+  "/request/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const user = req.user;
+      const { status, requestId } = req.params;
+      //validate status
+      const allowedStatus = ["accepted", "rejected"];
+      if (!allowedStatus.includes(status)) {
+        return res.status(400).json({
+          message: "Status not allowed",
+        });
+      }
+
+      //now validate request id and touserId is loggedInUser and status should be interested
+
+      const connectionRequest = await ConnectionRequest.findOne({
+        _id: requestId,
+        toUserId: user._id,
+        status: "interested",
+      });
+
+      if (!connectionRequest) {
+        return res.status(404).json({
+          message: "connection request not found",
+        });
+      }
+      connectionRequest.status = status;
+      const data = await connectionRequest.save();
+
+      res.send({
+        message: "connection request " + status,
+        data,
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: "error occured in review api",
+      });
     }
   }
 );
