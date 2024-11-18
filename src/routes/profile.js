@@ -48,7 +48,7 @@ profileRouter.patch("/profile/password", userAuth, async (req, res) => {
       throw new Error("User not found");
     }
 
-    validateUpdatePassword(req);
+    // validateUpdatePassword(req);
     //get current password
     // const currentPassword = user.password;
     const { currentPassword, newPassword } = req.body;
