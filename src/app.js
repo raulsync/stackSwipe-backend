@@ -4,6 +4,7 @@ const User = require("./models/user");
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
+const userRouter = require("./routes/user");
 const cookieParser = require("cookie-parser");
 const app = express(); //instance of express
 
@@ -19,6 +20,7 @@ app.use(cookieParser());
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
+app.use("/", userRouter);
 
 //Get - Feed Data => Get All user Data
 app.get("/feed", async (req, res) => {

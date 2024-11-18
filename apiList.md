@@ -10,7 +10,7 @@
 
 - GET /profile/view - done
 - Patch /profile/edit - done
-- Patch /profile/password - refactor needed
+- Patch /profile/password - done
 
 #### connectionRequestRouter
 
@@ -21,8 +21,8 @@
 
 #### userRouter
 
-- GET /user/connections
 - GET /user/request/received
+- GET /user/connections
 - GET /user/feed //get profile of other users on platform
 
 Status : interested, ignore, accepted, rejected
