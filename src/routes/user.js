@@ -1,9 +1,18 @@
 const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const { ConnectionRequest } = require("../models/connectionRequest");
+const User = require("../models/user");
 const userRouter = express.Router();
 
-const USER_DATA = ["firstName", "lastName"];
+const USER_DATA = [
+  "firstName",
+  "lastName",
+  "age",
+  "gender",
+  "skill",
+  "photoUrl",
+  "about",
+];
 
 //get all received request
 userRouter.get("/user/requests/received", userAuth, async (req, res) => {
@@ -66,6 +75,37 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
       message: "Error occured while fetching connections",
       error: error.message,
     });
+  }
+});
+
+userRouter.get("/feed", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+
+    // connection request related to loggedIn user
+    const connectionRequest = await ConnectionRequest.find({
+      $or: [{ fromUserId: loggedInUser }, { toUserId: loggedInUser }],
+    }).select(" fromUserId toUserId ");
+
+    // Create a Set to track users to exclude from feed
+    const hideUserFromFeed = new Set();
+    connectionRequest.forEach((request) => {
+      hideUserFromFeed.add(request.fromUserId._id.toString());
+      hideUserFromFeed.add(request.toUserId._id.toString());
+    });
+    console.log(hideUserFromFeed);
+
+    //query users not in set
+    const users = await User.find({
+      $and: [
+        { _id: { $nin: Array.from(hideUserFromFeed) } },
+        { _id: { $ne: loggedInUser._id } },
+      ],
+    }).select(USER_DATA);
+
+    res.send(users);
+  } catch (error) {
+    res.status(400).send("Error : " + error.message);
   }
 });
 
