@@ -6,6 +6,7 @@ const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 const app = express(); //instance of express
 
 const port = 7777;
@@ -14,6 +15,12 @@ const port = 7777;
 
 //if we not provide any route path to app.use then this will apply to all routes that we created in this file
 
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
