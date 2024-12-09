@@ -6,7 +6,7 @@ async function userAuth(req, res, next) {
     //read the token from req.cookies
     const { token } = req.cookies;
     if (!token) {
-      throw new Error("Token not valid !!!");
+      return res.status(401).send("Please login ... ");
     }
     //validate the token and find the user and send the user as response
     const decodedId = await jwt.verify(token, "stackSwipe$567");
