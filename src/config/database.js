@@ -1,9 +1,13 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const dbConnect = async () => {
-  await mongoose.connect(
-    "mongodb+srv://admin:CgnJOXgoRIFIZa0i@namastebackend.qfixi.mongodb.net/stackSwipe"
-  )
-}
+  const mongoUri = process.env.MONGO_URI;
 
-module.exports = { dbConnect }
+  if (!mongoUri) {
+    throw new Error("Mongo Uri is not defined in environment variable");
+  } else {
+    await mongoose.connect(mongoUri);
+  }
+};
+
+module.exports = { dbConnect };

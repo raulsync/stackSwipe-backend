@@ -6,10 +6,12 @@ const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
 const cookieParser = require("cookie-parser");
+const dotenv = require("dotenv");
 const cors = require("cors");
 const app = express(); //instance of express
+dotenv.config();
 
-const port = 7777;
+const PORT = process.env.PORT || 7777;
 
 //we use express.json() method as middleware for our all api to read the json data and convert it into js object
 
@@ -120,7 +122,7 @@ dbConnect()
   .then(() => {
     console.log("Database Connected Successfully");
     app.listen(port, () => {
-      console.log("server is listening on port 7777");
+      console.log("server is listening on port 7777 ");
     });
   })
   .catch((err) => {

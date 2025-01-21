@@ -9,7 +9,7 @@ async function userAuth(req, res, next) {
       return res.status(401).send("Please login ... ");
     }
     //validate the token and find the user and send the user as response
-    const decodedId = await jwt.verify(token, "stackSwipe$567");
+    const decodedId = await jwt.verify(token, process.env.JWT_SECRET_KEY);
     const { _id } = decodedId;
     const user = await User.findById(_id);
     if (!user) {
